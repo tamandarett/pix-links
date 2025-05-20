@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Link PIX</title>
+  <title>Gerar Link PIX</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f8f8f8; padding: 20px; }
     .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
     img { max-width: 200px; display: block; margin: auto; }
     textarea { width: 100%; height: 100px; margin-top: 20px; font-size: 16px; padding: 10px; }
     button { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
-    #resultado { margin-top: 20px; word-break: break-word; }
+    #mensagem { margin-top: 20px; color: green; font-weight: bold; }
+    form { display: none; }
   </style>
 </head>
 <body>
@@ -18,28 +19,25 @@
     <img src="logo.png" alt="Logo">
     <h2>Gerar Link Curto do PIX</h2>
     <textarea id="codigoPix" placeholder="Cole aqui o código PIX Copia e Cola..."></textarea>
-    <button onclick="gerarLink()">Gerar Link</button>
-    <div id="resultado"></div>
+    <button onclick="enviarFormulario()">Gerar Link</button>
+    <div id="mensagem"> </div>
+
+    <form id="pixForm" action="URL_DO_GOOGLE_FORM" method="post" target="hidden_iframe">
+      <input type="text" name="entry.999999999" id="campoGoogle" />
+      <input type="submit" value="Enviar" />
+    </form>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
   </div>
 
   <script>
-    async function gerarLink() {
+    function enviarFormulario() {
       const codigo = document.getElementById("codigoPix").value.trim();
       if (!codigo) return alert("Cole um código PIX válido.");
 
-      const resposta = await fetch("https://script.google.com/macros/s/AKfycbyI95CDiT3TnI52uMKtztjckphxexO2vEIAqjsKyiUy6lPV5aOw1CmWRtt1Gl2T9JNpJg/exec", {
-        method: "POST",
-        body: JSON.stringify({ codigo }),
-        headers: { "Content-Type": "application/json" }
-      });
-
-      const dados = await resposta.json();
-      const destino = document.getElementById("resultado");
-      if (dados.link) {
-        destino.innerHTML = `<p>Link curto gerado:</p><a href="${dados.link}" target="_blank">${dados.link}</a>`;
-      } else {
-        destino.innerHTML = "<p>Erro ao gerar link.</p>";
-      }
+      document.getElementById("campoGoogle").value = codigo;
+      document.getElementById("pixForm").submit();
+      document.getElementById("mensagem").innerText = "Código enviado com sucesso! O link curto aparecerá na planilha.";
+      document.getElementById("codigoPix").value = "";
     }
   </script>
 </body>
